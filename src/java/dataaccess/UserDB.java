@@ -9,43 +9,44 @@ import models.User;
 import java.util.List;
 import models.Role;
 
-public class UserDB {
-
+public class UserDB
+{
     /**
      * This method inserts user elements and return the number of rows affected.
      *
-     * @author Euna Cho
      * @param user user
      * @return rows rows
      * @throws java.sql.SQLException
      */
-    public int insert(User user) throws SQLException {
-
+    public int insert(User user) throws SQLException 
+    {
         ConnectionPool connectionPool = null;
         Connection connection = null;
 
         int rows = 0;
-        try {
+        try 
+        {
             connectionPool = ConnectionPool.getInstance();
             connection = connectionPool.getConnection();
-            String preparedQuery
-                    = "INSERT INTO User_Table "
-                    + "(email, fname, lname, password) "
-                    + "VALUES "
-                    + "(?, ?, ?, ?)";
-
-            PreparedStatement ps = connection.prepareStatement(preparedQuery);
+            
+            String insert_stmt = "INSERT INTO user_table(email, fname, lname, password, roleID) VALUES(?, ?, ?, ?, ?)";
+            
+            PreparedStatement ps = connection.prepareStatement(insert_stmt);
 
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getFname());
             ps.setString(3, user.getLname());
             ps.setString(4, user.getPassword());
+            ps.setInt(5, user.getRole().getRoleID());
 
-            rows = ps.executeUpdate();
+            rows = ps.executeUpdate();     
             ps.close();
-            return rows;
-        } finally {
-            connectionPool.freeConnection(connection);
+            
+            return rows;    
+        } 
+        finally 
+        {
+            connectionPool.freeConnection(connection);         
         }
     }
 
@@ -56,30 +57,37 @@ public class UserDB {
      * @return successCount Number of records updated
      * @throws java.sql.SQLException
      */
-    public int update(User user) throws SQLException {
+    public int update(User user) throws SQLException 
+    {
         ConnectionPool connectionPool = null;
         Connection connection = null;
-        try {
+        
+        int rows = 0;        
+        try 
+        {
             connectionPool = ConnectionPool.getInstance();
             connection = connectionPool.getConnection();
 
-            String preparedQuery = "UPDATE User_Table set active=?, fname=?, lname=?, password=? where email=?";
-            int successCount = 0;
+            String update_stmt = "UPDATE user_table SET active = ?, fname = ?, lname = ?, password = ?, roleID = ? "
+                    + "WHERE email = ?";
+           
+            PreparedStatement ps = connection.prepareStatement(update_stmt);
+            ps.setBoolean(1, user.isActive());
+            ps.setString(2, user.getFname());
+            ps.setString(3, user.getLname());        
+            ps.setString(4, user.getPassword());  
+            ps.setInt(5, user.getRole().getRoleID());
+            ps.setString(6, user.getEmail());
 
-            PreparedStatement statement = connection.prepareStatement(preparedQuery);
-            statement.setBoolean(1, user.isActive());
-            statement.setString(2, user.getFname());
-            statement.setString(3, user.getLname());
-            statement.setString(4, user.getEmail());
-            statement.setString(5, user.getPassword());
-
-            successCount = statement.executeUpdate();
-            statement.close();
-            return successCount;
-        } finally {
-            connectionPool.freeConnection(connection);
+            rows = ps.executeUpdate();
+            ps.close();    
+            
+            return rows;        
+        } 
+        finally 
+        {
+            connectionPool.freeConnection(connection);        
         }
-
     }
 
     /**
@@ -89,20 +97,28 @@ public class UserDB {
      * @return ArrayList users - the list of users retrieved from the database.
      * @throws SQLException
      */
-    public List<User> getAll() throws SQLException {
+    public List<User> getAll() throws SQLException 
+    {
         ConnectionPool connectionPool = null;
         Connection connection = null;
-        try {
+           
+        List<User> userList = new ArrayList();
+        
+        try 
+        {
             connectionPool = ConnectionPool.getInstance();
             connection = connectionPool.getConnection();
+            
             User user;
-            ArrayList<User> users = new ArrayList<>();
-
-            String preparedQuery = "SELECT active, email, fname, lname, password, role FROM user_table";
-            PreparedStatement ps = connection.prepareStatement(preparedQuery);
+         
+            String select_stmt = "SELECT active, email, fname, lname, password, roleID FROM user_table";
+            
+            PreparedStatement ps = connection.prepareStatement(select_stmt);
+            
             ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
+            
+            while (rs.next()) 
+            {
                 boolean active = rs.getBoolean(1);
                 String userEmail = rs.getString(2);
                 String fname = rs.getString(3);
@@ -115,12 +131,13 @@ public class UserDB {
                         
                 user = new User(userEmail, fname, lname, password, role);
                 user.setActive(active);
-                users.add(user);
+                userList.add(user);
             }
-
-            return users;
-        } finally {
-            connectionPool.freeConnection(connection);
+            return userList;
+        } 
+        finally 
+        {
+            connectionPool.freeConnection(connection);        
         }
     }
 
@@ -132,21 +149,27 @@ public class UserDB {
      * @return User dude - the user retrieved from the database.
      * @throws SQLException
      */
-    public User getUser(String email) throws SQLException {
-
+    public User getUser(String email) throws SQLException 
+    {
         ConnectionPool connectionPool = null;
         Connection connection = null;
-        try {
+        
+        try 
+        {
             connectionPool = ConnectionPool.getInstance();
             connection = connectionPool.getConnection();
 
             User user = new User();
-            String preparedQuery = "SELECT active, email, fname, lname, password, role FROM user_table WHERE email = ?";
-            PreparedStatement ps = connection.prepareStatement(preparedQuery);
+            
+            String select_stmt = "SELECT active, email, fname, lname, password, roleID FROM user_table WHERE email = ?";          
+            
+            PreparedStatement ps = connection.prepareStatement(select_stmt);
             ps.setString(1, email);
+            
             ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
+            if (rs.next()) 
+            {
                 boolean active = rs.getBoolean(1);
                 String userEmail = rs.getString(2);
                 String fname = rs.getString(3);
@@ -157,13 +180,14 @@ public class UserDB {
                 RoleDB roleDB = new RoleDB();
                 Role role = roleDB.getRole(roleID);
                 
-                
                 user = new User(userEmail, fname, lname, password, role);
                 user.setActive(active);
             }
 
             return user;
-        } finally {
+        } 
+        finally 
+        {
             connectionPool.freeConnection(connection);
         }
     }
@@ -175,22 +199,29 @@ public class UserDB {
      * @return false returns false if there's nothing to de
      * @throws java.sql.SQLException
      */
-    public boolean delete(User user) throws SQLException {
+    public int delete(User user) throws SQLException 
+    {
         ConnectionPool connectionPool = null;
         Connection connection = null;
-        try {
+        
+        int rows = 0;
+        try 
+        {
             connectionPool = ConnectionPool.getInstance();
             connection = connectionPool.getConnection();
 
-            String DELETE_STMT = "DELETE FROM User_Table where email = ?";
-            PreparedStatement prepare = connection.prepareStatement(DELETE_STMT);
-            prepare.setString(1, user.getEmail());
+            String delete_stmt = "DELETE FROM user_table WHERE email = ?";
+            
+            PreparedStatement ps = connection.prepareStatement(delete_stmt);
+            ps.setString(1, user.getEmail());
 
-            int rowCount = prepare.executeUpdate();
-            prepare.close();
-            return rowCount == 1;
-
-        } finally {
+            rows = ps.executeUpdate();
+            ps.close();
+            
+            return rows;
+        } 
+        finally 
+        {
             connectionPool.freeConnection(connection);
         }
     }

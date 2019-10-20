@@ -2,20 +2,22 @@ package models;
 
 import java.io.Serializable;
 
-public class User implements Serializable {
+public class User implements Serializable 
+{
+    private String email;
+    private boolean active;
+    private String fname;
+    private String lname;
+    private String password;
+    private Role role;
 
-    String email;
-    boolean active;
-    String fname;
-    String lname;
-    String password;
-    Role role;
-
-    public User() {
+    public User() 
+    {
         active = true;
     }
 
-    public User(String email, String fname, String lname, String password, Role role) {
+    public User(String email, String fname, String lname, String password, Role role) 
+    {
         this.active = true;
         this.email = email;
         this.fname = fname;
@@ -25,58 +27,75 @@ public class User implements Serializable {
     }
     
 
-    public boolean isActive() {
+    public boolean isActive() 
+    {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(boolean active) 
+    {
         this.active = active;
     }
 
-    public String getEmail() {
+    
+    public String getEmail() 
+    {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(String email) 
+    {
         this.email = email;
     }
 
-    public String getFname() {
+    
+    public String getFname() 
+    {
         return fname;
     }
 
-    public void setFname(String fname) {
+    public void setFname(String fname) 
+    {
         this.fname = fname;
     }
 
-    public String getLname() {
+    
+    public String getLname() 
+    {
         return lname;
     }
 
-    public void setLname(String lname) {
+    public void setLname(String lname)
+    {
         this.lname = lname;
     }
 
-    public String getPassword() {
+    
+    public String getPassword() 
+    {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password) 
+    {
         this.password = password;
     }
 
-    public Role getRole() {
+    
+    public Role getRole()
+    {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(Role role) 
+    {
         this.role = role;
     }
 
     
     @Override
-    public String toString() {
+    public String toString() 
+    {
         return "User{" + "active=" + active + ", email=" + email + ", fname=" + fname + ", lname=" + lname + ", password=" + password + '}';
     }
-
 }
