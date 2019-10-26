@@ -40,7 +40,7 @@
                 <input class="input-dark" type="text" placeholder="Last Name" name="lname" required />         
                 <input class="input-dark" type="password" placeholder="Password" name="password" required />
 
-                 <select class="input-dark" name="rname">
+                <select class="input-dark" name="rname">
                     <option value="System admin">System admin</option>
                     <option value="Company admin">Company admin</option>
                     <option value="Regular user">Regular user</option>                  
@@ -72,16 +72,34 @@
                             <td>${user.lname}</td>
                             <td>${user.role.roleName}</td>
                             
+                            <%--
                             <td class="text-center">
                                 <a href="/users?action=edit&email=${user.email}" class="row-btn">
                                     <i class="text-secondary fas fa-pencil-alt"></i>
                                 </a>
                             </td>
+                            --%>
+                            
+                            <td class="text-center">
+                                <a href="<c:url value='/users?action=edit&email=${user.email}'/>" class="row-btn">
+                                    <i class="text-secondary fas fa-pencil-alt"></i>
+                                </a>
+                            </td>
+                            
+                            <%--
                             <td class="text-center">
                                 <a href="/users?action=delete&email=${user.email}" 
                                     <i class="text-danger fas fa-times" ></i>
                                 </a>
                             </td>
+                            --%>
+
+                            <td class="text-center">
+                                <a href="<c:url value='users?action=delete&email=${user.email}'/>" 
+                                    <i class="text-danger fas fa-times" ></i>
+                                </a>
+                            </td>
+                            
                         </tr>
                     </c:forEach>
                     <tr>
